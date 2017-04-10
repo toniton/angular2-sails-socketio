@@ -1,0 +1,33 @@
+{
+  "name": "angular2-sails-socketio",
+  "version": "1.0.0",
+  "description": "An angular2 module for using the sails socket.io api",
+  "main": "socketio.module.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toniton/angular2-sails-socketio.git"
+  },
+  "keywords": [
+    "Angular2",
+    "Sails",
+    "SocketIO",
+    "Models",
+    "Query",
+    "Easy",
+    "API"
+  ],
+  "author": "toniton",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/toniton/angular2-sails-socketio/issues"
+  },
+  "homepage": "https://github.com/toniton/angular2-sails-socketio#readme",
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "sails.io.js": "^1.1.9",
+    "socket.io-client": "^1.7.3"
+  }
+}
