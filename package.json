@@ -2,7 +2,7 @@
   "name": "angular2-sails-socketio",
   "version": "1.0.0",
   "description": "An angular2 module for using the sails socket.io api",
-  "main": "socketio.module.ts",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
