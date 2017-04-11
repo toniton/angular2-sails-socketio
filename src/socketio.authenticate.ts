@@ -1,14 +1,14 @@
-import { SocketIOInterface } from "app/core/utility/socketio/socketio.interface";
-import { SocketIOConfig } from "app/core/utility/socketio/socketio.config";
-import { SocketIOQuery } from "app/core/utility/socketio/socketio.query";
+import { SocketIOInterface } from "./socketio.interface";
+import { SocketIOConfig } from "./socketio.config";
+import { SocketIOQuery } from "./socketio.query";
 import { Observable } from "rxjs";
 import * as SocketIOClient from "socket.io-client";
 import * as SailsIOClient from "sails.io.js";
 import { Component, OnInit, Injectable } from "@angular/core";
-import { Endpoint } from "app/core/utility/socketio/socketio.decorator";
-import { SocketIO } from "app/core/utility/socketio/socketio";
-import { SocketIOCallback } from "app/core/utility/socketio/socketio.callback";
-import { SocketIOResponse } from "app/core/utility/socketio/socketio.response";
+import { Endpoint } from "./socketio.decorator";
+import { SocketIO } from "./socketio";
+import { SocketIOCallback } from "./socketio.callback";
+import { SocketIOResponse } from "./socketio.response";
 import * as _ from "lodash";
 
 @Component({

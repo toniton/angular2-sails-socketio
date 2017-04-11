@@ -1,6 +1,6 @@
 {
   "name": "angular2-sails-socketio",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "An angular2 module for using the sails socket.io api",
   "main": "index.ts",
   "scripts": {
@@ -28,6 +28,8 @@
   "dependencies": {
     "lodash": "^4.17.4",
     "sails.io.js": "^1.1.9",
-    "socket.io-client": "^1.7.3"
+    "socket.io-client": "^1.7.3",
+    "@angular/core": "2.4.8",
+    "rxjs": "5.2.0"
   }
 }

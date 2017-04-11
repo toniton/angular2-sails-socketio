@@ -1,5 +1,5 @@
 
-import { SocketIOQuery } from "app/core/utility/socketio/socketio.query";
+import { SocketIOQuery } from "./socketio.query";
 
 export interface SocketIOInterface {
     save(): void;

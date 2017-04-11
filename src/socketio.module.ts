@@ -1,7 +1,7 @@
 
 import { NgModule, ModuleWithProviders } from "@angular/core";
-import { SocketIOConfig } from "app/core/utility/socketio/socketio.config";
-import { SocketIOModel } from "app/core/utility/socketio/socketio.model";
+import { SocketIOConfig } from "./socketio.config";
+import { SocketIOModel } from "./socketio.model";
 import { SocketIOAuthenticate } from "./socketio.authenticate";
 
 @NgModule({})
