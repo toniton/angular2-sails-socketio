@@ -8,7 +8,6 @@ import { SocketIOAuthenticate } from "./socketio.authenticate";
 export class SocketIOModule {
     static forRoot(): ModuleWithProviders {
         return {
-            declarations: [SocketIOAuthenticate],
             ngModule: SocketIOModule,
             providers: [SocketIOConfig]
         }
