@@ -11,6 +11,11 @@ import { SocketIOCallback } from "./socketio.callback";
 import { SocketIOResponse } from "./socketio.response";
 import * as _ from "lodash";
 
+export enum METHOD {
+    POST,
+    GET
+}
+
 @Component({
     providers: [SocketIOConfig]
 })
@@ -161,6 +166,40 @@ export class SocketIOModel implements SocketIOInterface {
                     reject(res);
                 }
             });
+        });
+        return promise;
+    }
+
+    action(path: string, method: METHOD, data?: any): Promise<this> {
+        let url = "/";
+        if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
+            url += this.socketIOConfig.getPrefix() + '/';
+        }
+        url += _.toLower(this.getEndPoint());
+        url += '/'.concat(path);
+        let that = this;
+        const promise = new Promise((resolve, reject) => {
+            if (METHOD.POST) {
+                (new SocketIO(this.socketIOConfig)).post(url, data || {}, <SocketIOCallback>{
+                    done(res: SocketIOResponse): void {
+                        if (res.getCode() == "OK") {
+                            let results = that.castResponseToModel(res.getData());
+                            resolve(results);
+                        }
+                        reject(res);
+                    }
+                });
+            } else {
+                (new SocketIO(this.socketIOConfig)).get(url, <SocketIOCallback>{
+                    done(res: SocketIOResponse): void {
+                        if (res.getCode() == "OK") {
+                            let results = that.castResponseToModel(res.getData());
+                            resolve(results);
+                        }
+                        reject(res);
+                    }
+                });
+            }
         });
         return promise;
     }
