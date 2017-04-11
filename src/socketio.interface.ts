@@ -1,5 +1,6 @@
 
 import { SocketIOQuery } from "./socketio.query";
+import { METHOD } from "./socketio.model";
 
 export interface SocketIOInterface {
     save(): void;
@@ -9,4 +10,5 @@ export interface SocketIOInterface {
     findById(id: string): any;
     find(query?: SocketIOQuery): any;
     castResponseToModel(response:any):any;
+    action(path: string, method: METHOD, data?: any): Promise<any>
 }

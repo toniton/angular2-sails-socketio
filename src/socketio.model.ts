@@ -179,7 +179,7 @@ export class SocketIOModel implements SocketIOInterface {
         url += '/'.concat(path);
         let that = this;
         const promise = new Promise((resolve, reject) => {
-            if (METHOD.POST) {
+            if (method == METHOD.POST) {
                 (new SocketIO(this.socketIOConfig)).post(url, data || {}, <SocketIOCallback>{
                     done(res: SocketIOResponse): void {
                         if (res.getCode() == "OK") {
