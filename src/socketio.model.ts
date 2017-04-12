@@ -35,7 +35,6 @@ export class SocketIOModel implements SocketIOInterface {
 
     public setConfig(_socketIOConfig: SocketIOConfig) {
         this.socketIOConfig = _socketIOConfig;
-        console.log(this.socketIOConfig);
         return this;
     }
 
@@ -55,6 +54,7 @@ export class SocketIOModel implements SocketIOInterface {
             let that = this;
             (new SocketIO(this.socketIOConfig)).get(url, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
+                    that.socketInterceptor(res);
                     if (res.getCode() == "OK") {
                         let results = that.castResponseToModel(res.getData());
                         resolve(results);
@@ -80,6 +80,7 @@ export class SocketIOModel implements SocketIOInterface {
             let that = this;
             (new SocketIO(this.socketIOConfig)).get(url, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
+                    that.socketInterceptor(res);
                     if (res.getCode() == "OK") {
                         let results = that.castResponseToModel(res.getData());
                         resolve(results);
@@ -104,6 +105,7 @@ export class SocketIOModel implements SocketIOInterface {
             let that = this;
             (new SocketIO(this.socketIOConfig)).get(url, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
+                    that.socketInterceptor(res);
                     if (res.getCode() == "OK") {
                         let results = that.castResponseToModel(res.getData());
                         resolve(results);
@@ -129,6 +131,7 @@ export class SocketIOModel implements SocketIOInterface {
             let that = this;
             (new SocketIO(this.socketIOConfig)).post(url, data, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
+                    that.socketInterceptor(res);
                     if (res.getCode() == "CREATED") {
                         let results = that.castResponseToModel(res.getData());
                         resolve(results);
@@ -158,6 +161,7 @@ export class SocketIOModel implements SocketIOInterface {
             let that = this;
             (new SocketIO(this.socketIOConfig)).put(url, data, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
+                    that.socketInterceptor(res);
                     if (res.getCode() == "OK") {
                         let results = that.castResponseToModel(res.getData());
                         resolve(results);
@@ -183,6 +187,7 @@ export class SocketIOModel implements SocketIOInterface {
             let that = this;
             (new SocketIO(this.socketIOConfig)).delete(url, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
+                    that.socketInterceptor(res);
                     if (res.getCode() == "OK") {
                         let results = that.castResponseToModel(res.getData());
                         resolve(results);
@@ -209,6 +214,7 @@ export class SocketIOModel implements SocketIOInterface {
             if (method == METHOD.POST) {
                 (new SocketIO(this.socketIOConfig)).post(url, data || {}, <SocketIOCallback>{
                     done(res: SocketIOResponse): void {
+                        that.socketInterceptor(res);
                         if (res.getCode() == "OK") {
                             let results = that.castResponseToModel(res.getData());
                             resolve(results);
@@ -219,6 +225,7 @@ export class SocketIOModel implements SocketIOInterface {
             } else {
                 (new SocketIO(this.socketIOConfig)).get(url, <SocketIOCallback>{
                     done(res: SocketIOResponse): void {
+                        that.socketInterceptor(res);
                         if (res.getCode() == "OK") {
                             let results = that.castResponseToModel(res.getData());
                             resolve(results);
@@ -248,6 +255,13 @@ export class SocketIOModel implements SocketIOInterface {
             results = item;
         }
         return results;
+    }
+
+    private socketInterceptor(response: SocketIOResponse): any {
+        let interceptor = this.socketIOConfig.getSocketInterceptor();
+        if (interceptor) {
+            interceptor.call(response);
+        }
     }
 
     // console.log(`Connected to "${this.modelIdentity}"`);

@@ -1,6 +1,7 @@
 
 import { SocketIOQuery } from "./socketio.query";
 import { METHOD } from "./socketio.model";
+import { SocketIOResponse } from "./socketio.response";
 
 export interface SocketIOInterface {
     save(): void;
