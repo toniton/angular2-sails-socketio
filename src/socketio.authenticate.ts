@@ -32,7 +32,6 @@ export class SocketIOAuthenticate {
             url += _.toLower(this.getEndPoint());
             (new SocketIO(this.socketIOConfig)).post(url, data, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
-                    console.log(res);
                     if (res.getCode() == "OK") {
                         let results = res.getData();
                         resolve(results);

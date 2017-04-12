@@ -24,6 +24,7 @@ export enum METHOD {
 export class SocketIOModel implements SocketIOInterface {
     private socketIOConfig: SocketIOConfig;
     [name: string]: any;
+
     constructor(_socketIOConfig?: SocketIOConfig) {
         this.socketIOConfig = _socketIOConfig;
     }
@@ -32,7 +33,16 @@ export class SocketIOModel implements SocketIOInterface {
     createdAt;
     updatedAt;
 
+    public setConfig(_socketIOConfig: SocketIOConfig) {
+        this.socketIOConfig = _socketIOConfig;
+        console.log(this.socketIOConfig);
+        return this;
+    }
+
     find(query?: SocketIOQuery): Promise<this> {
+        if (!this.socketIOConfig) {
+            throw new Error('You need to set a config to be able to perform this action');
+        }
         const promise = new Promise((resolve, reject) => {
             let url = "/";
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
@@ -57,6 +67,9 @@ export class SocketIOModel implements SocketIOInterface {
     }
 
     findById(id: string): Promise<this> {
+        if (!this.socketIOConfig) {
+            throw new Error('You need to set a config to be able to perform this action');
+        }
         const promise = new Promise((resolve, reject) => {
             let url = "/";
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
@@ -79,6 +92,9 @@ export class SocketIOModel implements SocketIOInterface {
     }
 
     findAll(): Promise<this> {
+        if (!this.socketIOConfig) {
+            throw new Error('You need to set a config to be able to perform this action');
+        }
         const promise = new Promise((resolve, reject) => {
             let url = "/";
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
@@ -100,6 +116,9 @@ export class SocketIOModel implements SocketIOInterface {
     }
 
     save(): Promise<this> {
+        if (!this.socketIOConfig) {
+            throw new Error('You need to set a config to be able to perform this action');
+        }
         const promise = new Promise((resolve, reject) => {
             let url = "/";
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
@@ -107,11 +126,10 @@ export class SocketIOModel implements SocketIOInterface {
             }
             url += _.toLower(this.getEndPoint());
             let data: this = this;
-            delete data.socketIOConfig;
             let that = this;
             (new SocketIO(this.socketIOConfig)).post(url, data, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
-                    if (res.getCode() == "OK") {
+                    if (res.getCode() == "CREATED") {
                         let results = that.castResponseToModel(res.getData());
                         resolve(results);
                     }
@@ -123,6 +141,9 @@ export class SocketIOModel implements SocketIOInterface {
     }
 
     update(): Promise<this> {
+        if (!this.socketIOConfig) {
+            throw new Error('You need to set a config to be able to perform this action');
+        }
         const promise = new Promise((resolve, reject) => {
             let url = "/";
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
@@ -149,6 +170,9 @@ export class SocketIOModel implements SocketIOInterface {
     }
 
     remove(): Promise<this> {
+        if (!this.socketIOConfig) {
+            throw new Error('You need to set a config to be able to perform this action');
+        }
         const promise = new Promise((resolve, reject) => {
             let url = "/";
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
@@ -171,6 +195,9 @@ export class SocketIOModel implements SocketIOInterface {
     }
 
     action(path: string, method: METHOD, data?: any): Promise<this> {
+        if (!this.socketIOConfig) {
+            throw new Error('You need to set a config to be able to perform this action');
+        }
         let url = "/";
         if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
             url += this.socketIOConfig.getPrefix() + '/';
@@ -204,18 +231,18 @@ export class SocketIOModel implements SocketIOInterface {
         return promise;
     }
 
-    castResponseToModel(response: any): any {
+    private castResponseToModel(response: any): any {
         let singleR = this;
         let results = null;
         if (_.isArray(response)) {
-            results = _.map(response, function (_item) {
-                let item = singleR;
+            results = _.map(response, function (_item, index) {
+                let item = _.clone(singleR);
                 delete item.socketIOConfig;
                 Object.assign(item, _item);
                 return item;
-            })
+            });
         } else if (_.isObject(response)) {
-            let item = singleR;
+            let item = _.clone(singleR);
             delete item.socketIOConfig;
             Object.assign(item, response);
             results = item;
