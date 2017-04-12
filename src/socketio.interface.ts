@@ -9,6 +9,5 @@ export interface SocketIOInterface {
     findAll(): any;
     findById(id: string): any;
     find(query?: SocketIOQuery): any;
-    castResponseToModel(response:any):any;
     action(path: string, method: METHOD, data?: any): Promise<any>
 }
