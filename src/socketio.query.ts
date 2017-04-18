@@ -92,7 +92,6 @@ export class SocketIOQuery {
         if (queryBuilder.charAt(0) != '?') {
             queryBuilder = '?' + queryBuilder;
         }
-        console.log(queryBuilder);
         return queryBuilder.toString();
     }
 
@@ -180,5 +179,3 @@ export class SocketIOQuery {
     }
 
 }
-
-
