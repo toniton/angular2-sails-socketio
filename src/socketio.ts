@@ -52,6 +52,7 @@ export class SocketIO {
 
     public get(url: string, callback: SocketIOCallback): void {
         this.initParameters();
+        console.log(window.io.socketpoint);
         window.io.socketpoint.get(url, {}, (response) => {
             callback.done(new SocketIOResponse(response));
         });

@@ -38,7 +38,7 @@ export class SocketIOModel implements SocketIOInterface {
         return this;
     }
 
-    find(query?: SocketIOQuery): Promise<this> {
+    find(query?: SocketIOQuery, populate?: Array<string>): Promise<this> {
         if (!this.socketIOConfig) {
             throw new Error('You need to set a config to be able to perform this action');
         }
@@ -50,6 +50,13 @@ export class SocketIOModel implements SocketIOInterface {
             url += _.toLower(this.getEndPoint());
             if (query) {
                 url += query.buildQuery();
+            }
+            if (populate) {
+                if (url.includes("?")) {
+                    url += '&populate=[' + _.join(populate, ',') + ']';
+                }else{
+                    url += '?populate=[' + _.join(populate, ',') + ']';
+                }
             }
             let that = this;
             (new SocketIO(this.socketIOConfig)).get(url, <SocketIOCallback>{
@@ -66,7 +73,7 @@ export class SocketIOModel implements SocketIOInterface {
         return promise;
     }
 
-    findById(id: string): Promise<this> {
+    findById(id: string, populate?: Array<string>): Promise<this> {
         if (!this.socketIOConfig) {
             throw new Error('You need to set a config to be able to perform this action');
         }
@@ -77,6 +84,13 @@ export class SocketIOModel implements SocketIOInterface {
             }
             url += _.toLower(this.getEndPoint());
             url += '/'.concat(id);
+            if (populate) {
+                if (url.includes("?")) {
+                    url += '&populate=[' + _.join(populate, ',') + ']';
+                }else{
+                    url += '?populate=[' + _.join(populate, ',') + ']';
+                }
+            }
             let that = this;
             (new SocketIO(this.socketIOConfig)).get(url, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
@@ -92,7 +106,7 @@ export class SocketIOModel implements SocketIOInterface {
         return promise;
     }
 
-    findAll(): Promise<this> {
+    findAll(populate?: Array<string>): Promise<this> {
         if (!this.socketIOConfig) {
             throw new Error('You need to set a config to be able to perform this action');
         }
@@ -102,6 +116,13 @@ export class SocketIOModel implements SocketIOInterface {
                 url += this.socketIOConfig.getPrefix() + '/';
             }
             url += _.toLower(this.getEndPoint());
+            if (populate) {
+                if (url.includes("?")) {
+                    url += '&populate=[' + _.join(populate, ',') + ']';
+                }else{
+                    url += '?populate=[' + _.join(populate, ',') + ']';
+                }
+            }
             let that = this;
             (new SocketIO(this.socketIOConfig)).get(url, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
