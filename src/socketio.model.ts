@@ -54,7 +54,7 @@ export class SocketIOModel implements SocketIOInterface {
             if (populate) {
                 if (url.includes("?")) {
                     url += '&populate=[' + _.join(populate, ',') + ']';
-                }else{
+                } else {
                     url += '?populate=[' + _.join(populate, ',') + ']';
                 }
             }
@@ -87,7 +87,7 @@ export class SocketIOModel implements SocketIOInterface {
             if (populate) {
                 if (url.includes("?")) {
                     url += '&populate=[' + _.join(populate, ',') + ']';
-                }else{
+                } else {
                     url += '?populate=[' + _.join(populate, ',') + ']';
                 }
             }
@@ -119,7 +119,7 @@ export class SocketIOModel implements SocketIOInterface {
             if (populate) {
                 if (url.includes("?")) {
                     url += '&populate=[' + _.join(populate, ',') + ']';
-                }else{
+                } else {
                     url += '?populate=[' + _.join(populate, ',') + ']';
                 }
             }
@@ -220,7 +220,7 @@ export class SocketIOModel implements SocketIOInterface {
         return promise;
     }
 
-    action(path: string, method: METHOD, data?: any): Promise<this> {
+    action(path: string, method: METHOD, data?: any | SocketIOQuery): Promise<this> {
         if (!this.socketIOConfig) {
             throw new Error('You need to set a config to be able to perform this action');
         }
@@ -244,6 +244,9 @@ export class SocketIOModel implements SocketIOInterface {
                     }
                 });
             } else {
+                if (data instanceof SocketIOQuery) {
+                    url += data.buildQuery();
+                }
                 (new SocketIO(this.socketIOConfig)).get(url, <SocketIOCallback>{
                     done(res: SocketIOResponse): void {
                         that.socketInterceptor(res);
