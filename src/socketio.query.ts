@@ -3,6 +3,8 @@ import * as _ from "lodash";
 export class SocketIOQuery {
 
     private criteria: object = {};
+    
+    private orCriteria: object = {};
 
     private where: string = "";
 
@@ -15,6 +17,12 @@ export class SocketIOQuery {
     private whereFunction(): string {
         if (_.isEmpty(this.criteria)) {
             return null;
+        }
+        if (!_.isEmpty(this.orCriteria)) {
+            if (_.isArray(this.orCriteria['or'])) {
+                this.orCriteria['or'].push(this.criteria);
+            }
+            return "where=" + JSON.stringify(this.orCriteria);
         }
         return "where=" + JSON.stringify(this.criteria);
     }
@@ -92,90 +100,164 @@ export class SocketIOQuery {
         if (queryBuilder.charAt(0) != '?') {
             queryBuilder = '?' + queryBuilder;
         }
+        console.info(queryBuilder.toString());
         return queryBuilder.toString();
     }
 
 
-    public or(value: string): SocketIOQuery {
-        let lastWhere = _.findLastKey(this.criteria);
-        if (_.isString(this.criteria[lastWhere])) {
-            this.criteria[lastWhere] = [this.criteria[lastWhere], value];
-        } else if (_.isArray(this.criteria[lastWhere])) {
-            this.criteria[lastWhere].push(value);
-        } else if (_.isObject(this.criteria[lastWhere])) {
-            let lastInnerWhere = _.findLastKey(this.criteria[lastWhere]);
-            this.criteria[lastWhere][lastInnerWhere] = [this.criteria[lastWhere][lastInnerWhere], value];
+    public or(): SocketIOQuery {
+        if (_.isUndefined(this.orCriteria['or'])) {
+            this.orCriteria['or'] = [this.criteria];
+            this.criteria = {};
+            return this;
         }
-        return this;
-    }
-
-    public orWhereEqualTo(key: string, value: string): SocketIOQuery {
-        let lastWhere = _.findLastKey(this.criteria);
-        let whereClause = {};
-        whereClause[key] = value;
-        if (!_.isArray(this.criteria['or'])) {
-            let whereArray = [];
-            whereArray.push(whereClause);
-            this.criteria = { or: whereArray };
-        } else {
-            this.criteria['or'].push(whereClause);
+        if (_.isArray(this.orCriteria['or'])) {
+            this.orCriteria['or'].push(this.criteria);
+        } else if (_.isObject(this.criteria['or'])) {
+            this.orCriteria['or'] = [this.criteria];
         }
+        this.criteria = {};
         return this;
     }
 
     public whereEqualTo(key: string, value: string): SocketIOQuery {
-        this.criteria[key] = value;
+        if (_.isUndefined(this.criteria[key])) {
+            this.criteria[key] = value;
+            return this;
+        }
+        if (_.isArray(this.criteria[key])) {
+            this.criteria[key].push(value);
+        } else if (_.isObject(this.criteria[key])) {
+            this.criteria[key] = value;
+        } else if (_.isString(this.criteria[key])) {
+            this.criteria[key] = [this.criteria[key], value];
+        }
         return this;
     }
 
     public whereNotEqualTo(key: string, value: string): SocketIOQuery {
-        this.criteria[key] = { '!': value };
-        return this;
+        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
+            this.criteria[key] = { '!': value };
+            return this;
+        }
+        if (_.isUndefined(this.criteria[key]['!'])) {
+            this.criteria[key]['!'] = value;
+            return this;
+        }
+        throw new Error("DuplicateError: ! clause, use whereNotIn instead");
     }
 
     public whereLike(key: string, value: string): SocketIOQuery {
-        this.criteria[key] = { 'like': value };
-        return this;
+        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
+            this.criteria[key] = { 'like': value };
+            return this;
+        }
+        if (_.isUndefined(this.criteria[key]['like'])) {
+            this.criteria[key]['like'] = value;
+            return this;
+        }
+        throw new Error("DuplicateError: like clause has already been used in this query");
     }
 
     public whereContains(key: string, value: string): SocketIOQuery {
-        this.criteria[key] = { 'contains': value };
-        return this;
+        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
+            this.criteria[key] = { 'contains': value };
+            return this;
+        }
+        if (_.isUndefined(this.criteria[key]['contains'])) {
+            this.criteria[key]['contains'] = value;
+            return this;
+        }
+        throw new Error("DuplicateError: contains clause has already been used in this query");
     }
 
     public whereStartsWith(key: string, value: string): SocketIOQuery {
-        this.criteria[key] = { 'startsWith': value };
-        return this;
+        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
+            this.criteria[key] = { 'startsWith': value };
+            return this;
+        }
+        if (_.isUndefined(this.criteria[key]['startsWith'])) {
+            this.criteria[key]['startsWith'] = value;
+            return this;
+        }
+        throw new Error("DuplicateError: startsWith clause has already been used in this query");
     }
 
     public whereEndsWith(key: string, value: string): SocketIOQuery {
-        this.criteria[key] = { 'endsWith': value };
-        return this;
+        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
+            this.criteria[key] = { 'endsWith': value };
+            return this;
+        }
+        if (_.isUndefined(this.criteria[key]['endsWith'])) {
+            this.criteria[key]['endsWith'] = value;
+            return this;
+        }
+        throw new Error("DuplicateError: endsWith clause has already been used in this query");
     }
 
     public whereNotIn(key: string, value: string): SocketIOQuery {
-        this.criteria[key] = { 'contains': value };
+        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
+            this.criteria[key] = { '!': [value] };
+            return this;
+        }
+        if (_.isUndefined(this.criteria[key]['!'])) {
+            this.criteria[key]['!'] = [value];
+            return this;
+        }
+        if (_.isArray(this.criteria[key]['!'])) {
+            this.criteria[key]['!'].push(value);
+        } else {
+            this.criteria[key]['!'] = [this.criteria[key]['!'], value];
+        }
         return this;
     }
 
-    public whereLessThan(key: string, value: string): SocketIOQuery {
-        this.criteria[key] = { '<': value };
-        return this;
+    public whereLessThan(key: string, value: string | number | boolean | Date): SocketIOQuery {
+        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
+            this.criteria[key] = { '<': value };
+            return this;
+        }
+        if (_.isUndefined(this.criteria[key]['<'])) {
+            this.criteria[key]['<'] = value;
+            return this;
+        }
+        throw new Error("DuplicateError: < clause has already been used in this query");
     }
 
-    public whereLessThanOrEqualTo(key: string, value: string): SocketIOQuery {
-        this.criteria[key] = { '<=': value };
-        return this;
+    public whereLessThanOrEqualTo(key: string, value: string | number | boolean | Date): SocketIOQuery {
+        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
+            this.criteria[key] = { '<=': value };
+            return this;
+        }
+        if (_.isUndefined(this.criteria[key]['<='])) {
+            this.criteria[key]['<='] = value;
+            return this;
+        }
+        throw new Error("DuplicateError: <= clause has already been used in this query");
     }
 
-    public whereGreaterThan(key: string, value: string): SocketIOQuery {
-        this.criteria[key] = { '>': value };
-        return this;
+    public whereGreaterThan(key: string, value: string | number | boolean | Date): SocketIOQuery {
+        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
+            this.criteria[key] = { '>': value };
+            return this;
+        }
+        if (_.isUndefined(this.criteria[key]['>'])) {
+            this.criteria[key]['>'] = value;
+            return this;
+        }
+        throw new Error("DuplicateError: > clause has already been used in this query");
     }
 
-    public whereGreaterThanOrEqualTo(key: string, value: string): SocketIOQuery {
-        this.criteria[key] = { '>=': value };
-        return this;
+    public whereGreaterThanOrEqualTo(key: string, value: string | number | boolean | Date): SocketIOQuery {
+        if (_.isUndefined(this.criteria[key]) || _.isString(this.criteria[key])) {
+            this.criteria[key] = { '>=': value };
+            return this;
+        }
+        if (_.isUndefined(this.criteria[key]['>='])) {
+            this.criteria[key]['>='] = value;
+            return this;
+        }
+        throw new Error("DuplicateError: >= clause has already been used in this query");
     }
 
 }
