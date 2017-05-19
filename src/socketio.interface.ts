@@ -1,12 +1,12 @@
 
 import { SocketIOQuery } from "./socketio.query";
-import { METHOD } from "./socketio.model";
+import { METHOD, SocketIOModel } from "./socketio.model";
 import { SocketIOResponse } from "./socketio.response";
 
 export interface SocketIOInterface {
-    save(): void;
-    update(): void;
-    remove(): void;
+    save(model: SocketIOModel): void;
+    update(model: SocketIOModel): void;
+    remove(model: SocketIOModel): void;
     findAll(): any;
     findById(id: string): any;
     find(query?: SocketIOQuery): any;
