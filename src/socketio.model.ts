@@ -138,7 +138,7 @@ export class SocketIOModel implements SocketIOInterface {
         return promise;
     }
 
-    save(): Promise<this> {
+    save(model: SocketIOModel): Promise<this> {
         if (!this.socketIOConfig) {
             throw new Error('You need to set a config to be able to perform this action');
         }
@@ -147,10 +147,9 @@ export class SocketIOModel implements SocketIOInterface {
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
                 url += this.socketIOConfig.getPrefix() + '/';
             }
-            url += _.toLower(this.getEndPoint());
-            let data: this = this;
+            url += _.toLower(model.getEndPoint());
             let that = this;
-            (new SocketIO(this.socketIOConfig)).post(url, data, <SocketIOCallback>{
+            (new SocketIO(this.socketIOConfig)).post(url, model, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
                     that.socketInterceptor(res);
                     if (res.getCode() == "CREATED") {
@@ -164,7 +163,7 @@ export class SocketIOModel implements SocketIOInterface {
         return promise;
     }
 
-    update(): Promise<this> {
+    update(model: SocketIOModel): Promise<this> {
         if (!this.socketIOConfig) {
             throw new Error('You need to set a config to be able to perform this action');
         }
@@ -173,14 +172,13 @@ export class SocketIOModel implements SocketIOInterface {
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
                 url += this.socketIOConfig.getPrefix() + '/';
             }
-            url += _.toLower(this.getEndPoint());
-            url += '/'.concat(this.id);
-            let data: this = this;
-            delete data.socketIOConfig;
-            delete data.createdAt;
-            delete data.updatedAt;
+            url += _.toLower(model.getEndPoint());
+            url += '/'.concat(model.id);
+            delete model.socketIOConfig;
+            delete model.createdAt;
+            delete model.updatedAt;
             let that = this;
-            (new SocketIO(this.socketIOConfig)).put(url, data, <SocketIOCallback>{
+            (new SocketIO(this.socketIOConfig)).put(url, model, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
                     that.socketInterceptor(res);
                     if (res.getCode() == "OK") {
@@ -194,7 +192,7 @@ export class SocketIOModel implements SocketIOInterface {
         return promise;
     }
 
-    remove(): Promise<this> {
+    remove(model: SocketIOModel): Promise<this> {
         if (!this.socketIOConfig) {
             throw new Error('You need to set a config to be able to perform this action');
         }
@@ -203,8 +201,8 @@ export class SocketIOModel implements SocketIOInterface {
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
                 url += this.socketIOConfig.getPrefix() + '/';
             }
-            url += _.toLower(this.getEndPoint());
-            url += '/'.concat(this.id);
+            url += _.toLower(model.getEndPoint());
+            url += '/'.concat(model.id);
             let that = this;
             (new SocketIO(this.socketIOConfig)).delete(url, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
