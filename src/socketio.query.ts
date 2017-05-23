@@ -100,7 +100,6 @@ export class SocketIOQuery {
         if (queryBuilder.charAt(0) != '?') {
             queryBuilder = '?' + queryBuilder;
         }
-        console.info(queryBuilder.toString());
         return queryBuilder.toString();
     }
 
