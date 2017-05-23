@@ -7,7 +7,7 @@ export class SocketIOConfig {
     private webSocketUrl: string;
     private autoConnect: boolean;
     private transports: [string];
-    private useCORSRouteToGetCookie: string;
+    private useCORSRouteToGetCookie: boolean;
     private headers: object;
     private prefix: string;
     private socketInterceptor: any;
@@ -20,14 +20,23 @@ export class SocketIOConfig {
         return this.webSocketUrl || "ws://localhost:1337";
     }
 
+    public setAutoConnect(autoConnect): void {
+        this.autoConnect = autoConnect;
+    }
     public getAutoConnect(): boolean {
-        return false;
+        return this.autoConnect;
+    }
+    public setTransports(transports): void {
+        this.transports = transports;
     }
     public getTransports(): [string] {
-        return ['websocket'];
+        return this.transports || ['websocket'];
+    }
+    public setUseCORSRouteToGetCookie(useCORSRouteToGetCookie): void {
+        this.useCORSRouteToGetCookie = useCORSRouteToGetCookie;
     }
     public getUseCORSRouteToGetCookie(): boolean {
-        return false;
+        return this.useCORSRouteToGetCookie || false;
     }
     public setHeaders(_headers: object): void {
         this.headers = _headers;
@@ -41,7 +50,7 @@ export class SocketIOConfig {
     public getPrefix(): string {
         return this.prefix || '';
     }
-    public setSocketInterceptor(interceptor: (response:SocketIOResponse)=>void): void {
+    public setSocketInterceptor(interceptor: (response: SocketIOResponse) => void): void {
         if (!_.isFunction(interceptor)) {
             throw new Error('This method only accepts a function');
         }
@@ -49,5 +58,11 @@ export class SocketIOConfig {
     }
     public getSocketInterceptor(): any {
         return this.socketInterceptor || null;
+    }
+    public onConnected(callback): void {
+        callback();
+    }
+    public onDisconnected(callback): void {
+        callback();
     }
 }

@@ -16,27 +16,32 @@ declare var window;
 })
 export class SocketIO {
     private socket: any = null;
-    constructor(private socketIOConfig: SocketIOConfig) {
-        this.connect();
-    }
+    constructor(private socketIOConfig: SocketIOConfig) { }
 
     private connected(): boolean {
-        return window.io.socketpoint.isConnected();
+        return window.io.socketpoint.isConnected() || false;
     }
 
-    public connect(): SocketIO {
+    public connect(): SocketIOClient {
+        let that = this;
         if (window.io == undefined) {
             window.io = SailsIOClient(SocketIOClient);
-            window.io.sails.autoConnect = this.socketIOConfig.getAutoConnect();
+            window.io.sails.autoConnect = false;//this.socketIOConfig.getAutoConnect();
             window.io.sails.url = this.socketIOConfig.getWebsocketUrl();
             window.io.sails.transports = this.socketIOConfig.getTransports();
             window.io.sails.useCORSRouteToGetCookie = this.socketIOConfig.getUseCORSRouteToGetCookie();
             window.io.sails.headers = this.socketIOConfig.getHeaders();
-            if (!window.io.socketpoint) {
-                window.io.socketpoint = window.io.sails.connect(window.io.sails.url);
-            }
+            window.io.socketpoint = (window.io.sails && window.io.sails.connect || window.io.connect)(window.io.sails.url);
+            window.io.socketpoint.on('connect', function () {
+                that.socketIOConfig.onConnected((): void => { });
+            });
+            window.io.socketpoint.on('disconnect', function () {
+                that.socketIOConfig.onDisconnected((): void => { });
+            });
+        } else if (window.io.socketpoint._raw.disconnected) {
+            window.io.socketpoint.reconnect();
         }
-        return this;
+        return window.io.socketpoint;
     }
 
     public isConnecting(): boolean {
@@ -51,51 +56,42 @@ export class SocketIO {
     }
 
     public get(url: string, callback: SocketIOCallback): void {
-        this.initParameters();
-        console.log(window.io.socketpoint);
-        window.io.socketpoint.get(url, {}, (response) => {
+        let socket = this.connect();
+        socket.get(url, {}, (response) => {
             callback.done(new SocketIOResponse(response));
         });
     }
 
     public post(url: string, data: object, callback: SocketIOCallback): void {
-        this.initParameters();
-        window.io.socketpoint.post(url, data, (response) => {
+        let socket = this.connect();
+        socket.post(url, data, (response) => {
             callback.done(new SocketIOResponse(response));
         });
     }
 
-    public put(url: string, data: object, callback: SocketIOCallback): SocketIO {
-        this.initParameters();
-        return window.io.socketpoint.put(url, data, (response) => {
+    public put(url: string, data: object, callback: SocketIOCallback): void {
+        let socket = this.connect();
+        socket.put(url, data, (response) => {
             callback.done(new SocketIOResponse(response));
         });
     }
 
-    public delete(url: string, callback: SocketIOCallback): SocketIO {
-        this.initParameters();
-        return window.io.socketpoint.delete(url, {}, (response) => {
+    public delete(url: string, callback: SocketIOCallback): void {
+        let socket = this.connect();
+        socket.delete(url, {}, (response) => {
             callback.done(new SocketIOResponse(response));
         });
     }
 
     public on(eventName: string, callback: SocketIOCallback): any {
-        this.initParameters();
         window.io.socketpoint.on(eventName, (response) => {
             callback.done(new SocketIOResponse(response));
         });
     }
 
     public off(eventName: string, callback: SocketIOCallback): SocketIO {
-        this.initParameters();
         return window.io.socketpoint.off(eventName, (response) => {
             callback.done(new SocketIOResponse(response));
         });
-    }
-
-    private initParameters(): void {
-        if (window.io.socketpoint) {
-            window.io.socketpoint.headers = this.socketIOConfig.getHeaders();
-        }
     }
 }
