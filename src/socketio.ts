@@ -41,6 +41,7 @@ export class SocketIO {
         } else if (window.io.socketpoint._raw.disconnected) {
             window.io.socketpoint.reconnect();
         }
+        window.io.socketpoint.headers = this.socketIOConfig.getHeaders();
         return window.io.socketpoint;
     }
 
