@@ -33,10 +33,14 @@ export class SocketIO {
             window.io.sails.headers = this.socketIOConfig.getHeaders();
             window.io.socketpoint = (window.io.sails && window.io.sails.connect || window.io.connect)(window.io.sails.url);
             window.io.socketpoint.on('connect', function () {
-                that.socketIOConfig.onConnected((): void => { });
+                if (that.socketIOConfig.getOnConnectCallback !== null) {
+                    that.socketIOConfig.getOnConnectCallback();
+                }
             });
             window.io.socketpoint.on('disconnect', function () {
-                that.socketIOConfig.onDisconnected((): void => { });
+                if (that.socketIOConfig.getOnDisconnectCallback !== null) {
+                    that.socketIOConfig.getOnDisconnectCallback();
+                }
             });
         } else if (window.io.socketpoint._raw.disconnected) {
             window.io.socketpoint.reconnect();

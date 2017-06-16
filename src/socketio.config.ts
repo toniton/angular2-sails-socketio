@@ -11,6 +11,8 @@ export class SocketIOConfig {
     private headers: object;
     private prefix: string;
     private socketInterceptor: any;
+    private connectedCallback: any;
+    private disConnectedCallback: any;
 
     public setWebsocketUrl(_webSocketUrl) {
         this.webSocketUrl = _webSocketUrl;
@@ -59,10 +61,14 @@ export class SocketIOConfig {
     public getSocketInterceptor(): any {
         return this.socketInterceptor || null;
     }
-    public onConnected(callback): void {
-        callback();
-    }
-    public onDisconnected(callback): void {
-        callback();
-    }
+    public setConnectionCallbacks(connectedCallback, disConnectedCallback): void {
+        this.connectedCallback = connectedCallback;
+        this.disConnectedCallback = disConnectedCallback;
+    };
+    public getOnConnectCallback(): void {
+        return this.connectedCallback;
+    };
+    public getOnDisconnectCallback(): void {
+        return this.disConnectedCallback;
+    };
 }
