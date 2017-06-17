@@ -245,7 +245,6 @@ export class SocketIOModel implements SocketIOInterface {
             if (method == METHOD.POST) {
                 (new SocketIO(this.socketIOConfig)).post(url, data || {}, <SocketIOCallback>{
                     done(res: SocketIOResponse): void {
-                        that.socketInterceptor(res);
                         if (res.getCode() == "OK") {
                             let results = that.castResponseToModel(res.getData());
                             resolve(results);
