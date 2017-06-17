@@ -26,7 +26,7 @@ export class SocketIO {
         let that = this;
         if (window.io == undefined) {
             window.io = SailsIOClient(SocketIOClient);
-            window.io.sails.autoConnect = false;//this.socketIOConfig.getAutoConnect();
+            window.io.sails.autoConnect = this.socketIOConfig.getAutoConnect();
             window.io.sails.url = this.socketIOConfig.getWebsocketUrl();
             window.io.sails.transports = this.socketIOConfig.getTransports();
             window.io.sails.useCORSRouteToGetCookie = this.socketIOConfig.getUseCORSRouteToGetCookie();

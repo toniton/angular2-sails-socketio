@@ -42,7 +42,7 @@ export class SocketIOModel implements SocketIOInterface {
         if (!this.socketIOConfig) {
             throw new Error('You need to set a config to be able to perform this action');
         }
-        const promise = new Promise((resolve, reject) => {
+        let promise = new Promise((resolve, reject) => {
             let url = "/";
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
                 url += this.socketIOConfig.getPrefix() + '/';
@@ -61,7 +61,6 @@ export class SocketIOModel implements SocketIOInterface {
             let that = this;
             (new SocketIO(this.socketIOConfig)).get(url, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
-                    that.socketInterceptor(res);
                     if (res.getCode() == "OK") {
                         let results = that.castResponseToModel(res.getData());
                         resolve(results);
@@ -70,6 +69,9 @@ export class SocketIOModel implements SocketIOInterface {
                 }
             })
         });
+        _.forEach(this.socketIOConfig.getSocketInterceptor(),(interceptor) => {
+            promise = promise.then(interceptor.then);
+        });
         return promise;
     }
 
@@ -77,7 +79,7 @@ export class SocketIOModel implements SocketIOInterface {
         if (!this.socketIOConfig) {
             throw new Error('You need to set a config to be able to perform this action');
         }
-        const promise = new Promise((resolve, reject) => {
+        let promise = new Promise((resolve, reject) => {
             let url = "/";
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
                 url += this.socketIOConfig.getPrefix() + '/';
@@ -94,7 +96,6 @@ export class SocketIOModel implements SocketIOInterface {
             let that = this;
             (new SocketIO(this.socketIOConfig)).get(url, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
-                    that.socketInterceptor(res);
                     if (res.getCode() == "OK") {
                         let results = that.castResponseToModel(res.getData());
                         resolve(results);
@@ -103,6 +104,9 @@ export class SocketIOModel implements SocketIOInterface {
                 }
             });
         });
+        _.forEach(this.socketIOConfig.getSocketInterceptor(),(interceptor) => {
+            promise = promise.then(interceptor.then);
+        });
         return promise;
     }
 
@@ -110,7 +114,7 @@ export class SocketIOModel implements SocketIOInterface {
         if (!this.socketIOConfig) {
             throw new Error('You need to set a config to be able to perform this action');
         }
-        const promise = new Promise((resolve, reject) => {
+        let promise = new Promise((resolve, reject) => {
             let url = "/";
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
                 url += this.socketIOConfig.getPrefix() + '/';
@@ -126,7 +130,6 @@ export class SocketIOModel implements SocketIOInterface {
             let that = this;
             (new SocketIO(this.socketIOConfig)).get(url, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
-                    that.socketInterceptor(res);
                     if (res.getCode() == "OK") {
                         let results = that.castResponseToModel(res.getData());
                         resolve(results);
@@ -135,6 +138,9 @@ export class SocketIOModel implements SocketIOInterface {
                 }
             });
         });
+        _.forEach(this.socketIOConfig.getSocketInterceptor(),(interceptor) => {
+            promise = promise.then(interceptor.then);
+        });
         return promise;
     }
 
@@ -142,7 +148,7 @@ export class SocketIOModel implements SocketIOInterface {
         if (!this.socketIOConfig) {
             throw new Error('You need to set a config to be able to perform this action');
         }
-        const promise = new Promise((resolve, reject) => {
+        let promise = new Promise((resolve, reject) => {
             let url = "/";
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
                 url += this.socketIOConfig.getPrefix() + '/';
@@ -151,7 +157,6 @@ export class SocketIOModel implements SocketIOInterface {
             let that = this;
             (new SocketIO(this.socketIOConfig)).post(url, model, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
-                    that.socketInterceptor(res);
                     if (res.getCode() == "CREATED") {
                         let results = that.castResponseToModel(res.getData());
                         resolve(results);
@@ -160,6 +165,9 @@ export class SocketIOModel implements SocketIOInterface {
                 }
             });
         });
+        _.forEach(this.socketIOConfig.getSocketInterceptor(),(interceptor) => {
+            promise = promise.then(interceptor.then);
+        });
         return promise;
     }
 
@@ -167,7 +175,7 @@ export class SocketIOModel implements SocketIOInterface {
         if (!this.socketIOConfig) {
             throw new Error('You need to set a config to be able to perform this action');
         }
-        const promise = new Promise((resolve, reject) => {
+        let promise = new Promise((resolve, reject) => {
             let url = "/";
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
                 url += this.socketIOConfig.getPrefix() + '/';
@@ -180,7 +188,6 @@ export class SocketIOModel implements SocketIOInterface {
             let that = this;
             (new SocketIO(this.socketIOConfig)).put(url, model, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
-                    that.socketInterceptor(res);
                     if (res.getCode() == "OK") {
                         let results = that.castResponseToModel(res.getData());
                         resolve(results);
@@ -189,6 +196,9 @@ export class SocketIOModel implements SocketIOInterface {
                 }
             });
         });
+        _.forEach(this.socketIOConfig.getSocketInterceptor(),(interceptor) => {
+            promise = promise.then(interceptor.then);
+        });
         return promise;
     }
 
@@ -196,7 +206,7 @@ export class SocketIOModel implements SocketIOInterface {
         if (!this.socketIOConfig) {
             throw new Error('You need to set a config to be able to perform this action');
         }
-        const promise = new Promise((resolve, reject) => {
+        let promise = new Promise((resolve, reject) => {
             let url = "/";
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
                 url += this.socketIOConfig.getPrefix() + '/';
@@ -206,7 +216,6 @@ export class SocketIOModel implements SocketIOInterface {
             let that = this;
             (new SocketIO(this.socketIOConfig)).delete(url, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
-                    that.socketInterceptor(res);
                     if (res.getCode() == "OK") {
                         let results = that.castResponseToModel(res.getData());
                         resolve(results);
@@ -214,6 +223,9 @@ export class SocketIOModel implements SocketIOInterface {
                     reject(res);
                 }
             });
+        });
+        _.forEach(this.socketIOConfig.getSocketInterceptor(),(interceptor) => {
+            promise = promise.then(interceptor.then);
         });
         return promise;
     }
@@ -229,7 +241,7 @@ export class SocketIOModel implements SocketIOInterface {
         url += _.toLower(this.getEndPoint());
         url += '/'.concat(path);
         let that = this;
-        const promise = new Promise((resolve, reject) => {
+        let promise = new Promise((resolve, reject) => {
             if (method == METHOD.POST) {
                 (new SocketIO(this.socketIOConfig)).post(url, data || {}, <SocketIOCallback>{
                     done(res: SocketIOResponse): void {
@@ -247,7 +259,6 @@ export class SocketIOModel implements SocketIOInterface {
                 }
                 (new SocketIO(this.socketIOConfig)).get(url, <SocketIOCallback>{
                     done(res: SocketIOResponse): void {
-                        that.socketInterceptor(res);
                         if (res.getCode() == "OK") {
                             let results = that.castResponseToModel(res.getData());
                             resolve(results);
@@ -257,6 +268,9 @@ export class SocketIOModel implements SocketIOInterface {
                 });
             }
         });
+        _.forEach(this.socketIOConfig.getSocketInterceptor(),(interceptor) => {
+            promise = promise.then(interceptor.then);
+        });
         return promise;
     }
 
@@ -264,12 +278,11 @@ export class SocketIOModel implements SocketIOInterface {
         if (!this.socketIOConfig) {
             throw new Error('You need to set a config to be able to perform this action');
         }
-        const promise = new Promise((resolve, reject) => {
+        let promise = new Promise((resolve, reject) => {
             let eventName = _.toLower(this.getEndPoint());
             let that = this;
             (new SocketIO(this.socketIOConfig)).on(eventName, <SocketIOCallback>{
                 done(res: SocketIOResponse): void {
-                    that.socketInterceptor(res);
                     if (res.getCode() == "OK") {
                         let results = that.castResponseToModel(res.getData());
                         resolve(results);
@@ -277,6 +290,10 @@ export class SocketIOModel implements SocketIOInterface {
                     reject(res);
                 }
             });
+        });
+
+        _.forEach(this.socketIOConfig.getSocketInterceptor(),(interceptor) => {
+            promise = promise.then(interceptor.then);
         });
         return promise;
     }
@@ -299,13 +316,4 @@ export class SocketIOModel implements SocketIOInterface {
         }
         return results;
     }
-
-    private socketInterceptor(response: SocketIOResponse): any {
-        let interceptor = this.socketIOConfig.getSocketInterceptor();
-        if (_.isFunction(interceptor)) {
-            interceptor(response);
-        }
-    }
-
-    // console.log(`Connected to "${this.modelIdentity}"`);
 }

@@ -10,7 +10,7 @@ export class SocketIOConfig {
     private useCORSRouteToGetCookie: boolean;
     private headers: object;
     private prefix: string;
-    private socketInterceptor: any;
+    private socketInterceptor: Array< (response: SocketIOResponse)=> Promise<SocketIOResponse>> = new Array< (response: SocketIOResponse)=> Promise<SocketIOResponse>>();
     private connectedCallback: any;
     private disConnectedCallback: any;
 
@@ -52,11 +52,11 @@ export class SocketIOConfig {
     public getPrefix(): string {
         return this.prefix || '';
     }
-    public setSocketInterceptor(interceptor: (response: SocketIOResponse) => void): void {
+    public setSocketInterceptor(interceptor: (response: SocketIOResponse)=> Promise<SocketIOResponse>): void {
         if (!_.isFunction(interceptor)) {
             throw new Error('This method only accepts a function');
         }
-        this.socketInterceptor = interceptor;
+        this.socketInterceptor.push(interceptor);
     }
     public getSocketInterceptor(): any {
         return this.socketInterceptor || null;
