@@ -31,6 +31,7 @@ export class SocketIO {
             window.io.sails.transports = this.socketIOConfig.getTransports();
             window.io.sails.useCORSRouteToGetCookie = this.socketIOConfig.getUseCORSRouteToGetCookie();
             window.io.sails.headers = this.socketIOConfig.getHeaders();
+            window.io.sails.timeout = this.socketIOConfig.getTimeOut();
             window.io.socketpoint = (window.io.sails && window.io.sails.connect || window.io.connect)(window.io.sails.url);
             window.io.socketpoint.on('connect', function () {
                 if (that.socketIOConfig.getOnConnectCallback !== null) {

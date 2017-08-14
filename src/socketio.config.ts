@@ -10,9 +10,10 @@ export class SocketIOConfig {
     private useCORSRouteToGetCookie: boolean;
     private headers: object;
     private prefix: string;
-    private socketInterceptor: Array< (response: SocketIOResponse)=> Promise<SocketIOResponse>> = new Array< (response: SocketIOResponse)=> Promise<SocketIOResponse>>();
+    private socketInterceptor: Array<(response: SocketIOResponse) => Promise<SocketIOResponse>> = new Array<(response: SocketIOResponse) => Promise<SocketIOResponse>>();
     private connectedCallback: any;
     private disConnectedCallback: any;
+    private timeoutDuration: number;
 
     public setWebsocketUrl(_webSocketUrl) {
         this.webSocketUrl = _webSocketUrl;
@@ -27,6 +28,12 @@ export class SocketIOConfig {
     }
     public getAutoConnect(): boolean {
         return this.autoConnect;
+    }
+    public setTimeOut(duration: number){
+        this.timeoutDuration = duration || 20000;
+    }
+    public getTimeOut(): number{
+        return this.timeoutDuration || 20000;
     }
     public setTransports(transports): void {
         this.transports = transports;
@@ -52,14 +59,11 @@ export class SocketIOConfig {
     public getPrefix(): string {
         return this.prefix || '';
     }
-    public setSocketInterceptor(interceptor: (response: SocketIOResponse)=> Promise<SocketIOResponse>): void {
-        if (!_.isFunction(interceptor)) {
-            throw new Error('This method only accepts a function');
-        }
+    public setSocketInterceptor(interceptor: (response: SocketIOResponse) => Promise<SocketIOResponse>): void {
         this.socketInterceptor.push(interceptor);
     }
     public getSocketInterceptor(): any {
-        return this.socketInterceptor || null;
+        return this.socketInterceptor || [];
     }
     public setConnectionCallbacks(connectedCallback, disConnectedCallback): void {
         this.connectedCallback = connectedCallback;

@@ -69,10 +69,7 @@ export class SocketIOModel implements SocketIOInterface {
                 }
             })
         });
-        _.forEach(this.socketIOConfig.getSocketInterceptor(),(interceptor) => {
-            promise = promise.then(interceptor.then);
-        });
-        return promise;
+        return this.attachInterceptorsToPromise(promise);
     }
 
     findById(id: string, populate?: Array<string>): Promise<this> {
@@ -104,10 +101,7 @@ export class SocketIOModel implements SocketIOInterface {
                 }
             });
         });
-        _.forEach(this.socketIOConfig.getSocketInterceptor(),(interceptor) => {
-            promise = promise.then(interceptor.then);
-        });
-        return promise;
+        return this.attachInterceptorsToPromise(promise);
     }
 
     findAll(populate?: Array<string>): Promise<this> {
@@ -138,10 +132,7 @@ export class SocketIOModel implements SocketIOInterface {
                 }
             });
         });
-        _.forEach(this.socketIOConfig.getSocketInterceptor(),(interceptor) => {
-            promise = promise.then(interceptor.then);
-        });
-        return promise;
+        return this.attachInterceptorsToPromise(promise);
     }
 
     save(model: SocketIOModel): Promise<this> {
@@ -165,10 +156,7 @@ export class SocketIOModel implements SocketIOInterface {
                 }
             });
         });
-        _.forEach(this.socketIOConfig.getSocketInterceptor(),(interceptor) => {
-            promise = promise.then(interceptor.then);
-        });
-        return promise;
+        return this.attachInterceptorsToPromise(promise);
     }
 
     update(model: SocketIOModel): Promise<this> {
@@ -196,10 +184,7 @@ export class SocketIOModel implements SocketIOInterface {
                 }
             });
         });
-        _.forEach(this.socketIOConfig.getSocketInterceptor(),(interceptor) => {
-            promise = promise.then(interceptor.then);
-        });
-        return promise;
+        return this.attachInterceptorsToPromise(promise);
     }
 
     remove(model: SocketIOModel): Promise<this> {
@@ -211,7 +196,7 @@ export class SocketIOModel implements SocketIOInterface {
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
                 url += this.socketIOConfig.getPrefix() + '/';
             }
-            url += _.toLower(model.getEndPoint());
+            url += _.toLower(this.getEndPoint());
             url += '/'.concat(model.id);
             let that = this;
             (new SocketIO(this.socketIOConfig)).delete(url, <SocketIOCallback>{
@@ -224,10 +209,7 @@ export class SocketIOModel implements SocketIOInterface {
                 }
             });
         });
-        _.forEach(this.socketIOConfig.getSocketInterceptor(),(interceptor) => {
-            promise = promise.then(interceptor.then);
-        });
-        return promise;
+        return this.attachInterceptorsToPromise(promise);
     }
 
     action(path: string, method: METHOD, data?: any | SocketIOQuery): Promise<this> {
@@ -267,10 +249,7 @@ export class SocketIOModel implements SocketIOInterface {
                 });
             }
         });
-        _.forEach(this.socketIOConfig.getSocketInterceptor(),(interceptor) => {
-            promise = promise.then(interceptor.then);
-        });
-        return promise;
+        return this.attachInterceptorsToPromise(promise);
     }
 
     on(): Promise<this> {
@@ -290,11 +269,7 @@ export class SocketIOModel implements SocketIOInterface {
                 }
             });
         });
-
-        _.forEach(this.socketIOConfig.getSocketInterceptor(),(interceptor) => {
-            promise = promise.then(interceptor.then);
-        });
-        return promise;
+        return this.attachInterceptorsToPromise(promise);
     }
 
     private castResponseToModel(response: any): any {
@@ -314,5 +289,15 @@ export class SocketIOModel implements SocketIOInterface {
             results = item;
         }
         return results;
+    }
+    private attachInterceptorsToPromise(promise: Promise<SocketIOResponse>): any {
+        _.forEach(this.socketIOConfig.getSocketInterceptor(), (interceptor) => {
+            promise = promise.then((response: SocketIOResponse) => {
+                return interceptor(response)
+            },(response: SocketIOResponse) => {
+                return interceptor(response)
+            });
+        });
+        return promise;
     }
 }
