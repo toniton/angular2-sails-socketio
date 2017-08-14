@@ -168,7 +168,7 @@ export class SocketIOModel implements SocketIOInterface {
             if (!_.isEmpty(this.socketIOConfig.getPrefix())) {
                 url += this.socketIOConfig.getPrefix() + '/';
             }
-            url += _.toLower(model.getEndPoint());
+            url += _.toLower(this.getEndPoint());
             url += '/'.concat(model.id);
             delete model.socketIOConfig;
             delete model.createdAt;
